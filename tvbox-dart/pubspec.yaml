@@ -1,9 +1,9 @@
 name: tvbox
 description: Live channels for TVBox.
-version: 0.1.1
-homepage: https://github.com/dimchat/demo-dart
-repository: https://github.com/dimchat/demo-dart
-issue_tracker: https://github.com/dimchat/demo-dart/issues
+version: 1.0.0
+homepage: https://github.com/moky/TVBox
+repository: https://github.com/moky/TVBox
+issue_tracker: https://github.com/moky/TVBox/issues
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

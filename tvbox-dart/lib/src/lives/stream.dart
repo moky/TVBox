@@ -102,22 +102,40 @@ class LiveStream extends Dictionary {
     return factory.createStream(info);
   }
 
-  static List<LiveStream> convert(Iterable array) {
+  static List<LiveStream> convert(Iterable sources) {
     List<LiveStream> streams = [];
-    LiveStream? src;
-    for (var info in array) {
-      src = parse(info);
-      if (src != null) {
-        streams.add(src);
+    LiveStream? m3u8;
+    bool found;
+    for (var src in sources) {
+      m3u8 = parse(src);
+      if (m3u8 == null) {
+        continue;
+      }
+      // check duplicated
+      found = false;
+      for (LiveStream prev in streams) {
+        if (prev.url == m3u8.url) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        streams.add(m3u8);
       }
     }
     return streams;
   }
 
-  static List<Map> revert(Iterable<LiveStream> streams) {
+  static List<Map> revert(Iterable streams) {
     List<Map> array = [];
-    for (var src in streams) {
-      array.add(src.toMap());
+    for (var item in streams) {
+      if (item is Dictionary) {
+        array.add(item.toMap());
+      } else if (item is Map) {
+        array.add(item);
+      } else {
+        assert(false, 'stream error: $item');
+      }
     }
     return array;
   }

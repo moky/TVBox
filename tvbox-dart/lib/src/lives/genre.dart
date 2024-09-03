@@ -70,8 +70,8 @@ class LiveGenre extends Dictionary {
 
   /// Update Channels
   bool addChannel(LiveChannel channel) {
-    var array = channels;
-    for (var item in array) {
+    List<LiveChannel> array = channels;
+    for (LiveChannel item in array) {
       if (item.name == channel.name) {
         // same channel, merge streams
         item.addStreams(channel.streams);
@@ -84,12 +84,12 @@ class LiveGenre extends Dictionary {
   }
 
   bool addChannels(Iterable<LiveChannel> newChannels) {
-    var array = channels;
+    List<LiveChannel> array = channels;
     int count = 0;
     bool found;
-    for (var item in newChannels) {
+    for (LiveChannel item in newChannels) {
       found = false;
-      for (var old in array) {
+      for (LiveChannel old in array) {
         if (old.name == item.name) {
           // same channel, merge streams
           old.addStreams(item.streams);
@@ -144,7 +144,7 @@ class LiveGenre extends Dictionary {
 
   static List<Map> revert(Iterable<LiveGenre> groups) {
     List<Map> array = [];
-    for (var item in groups) {
+    for (LiveGenre item in groups) {
       array.add(item.toMap());
     }
     return array;

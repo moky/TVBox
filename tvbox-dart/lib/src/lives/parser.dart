@@ -59,7 +59,7 @@ class LiveParser {
       //
       //  1. check genre
       //
-      var genre = fetchGenre(text);
+      LiveGenre? genre = fetchGenre(text);
       if (genre != null) {
         // alternate current group
         if (current.isNotEmpty) {
@@ -73,20 +73,33 @@ class LiveParser {
       //  2. check channel
       //
       var pair = fetchChannel(text);
-      var channel = pair.first;
+      LiveChannel? channel = pair.first;
       if (channel == null) {
         // empty line?
         continue;
       }
       // split streams
-      var sources = pair.second.split(r'#');
+      List<String> sources = pair.second.split(r'#');
       //
       //  3. create streams
       //
-      Set<LiveStream> streams = {};
-      for (var src in sources) {
-        var m3u8 = fetchStream(src);
-        if (m3u8 != null) {
+      List<LiveStream> streams = [];
+      LiveStream? m3u8;
+      bool found;
+      for (String src in sources) {
+        m3u8 = fetchStream(src);
+        if (m3u8 == null) {
+          continue;
+        }
+        // check duplicated
+        found = false;
+        for (LiveStream prev in streams) {
+          if (prev.url == m3u8.url) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
           streams.add(m3u8);
         }
       }

@@ -70,8 +70,8 @@ class LiveChannel extends Dictionary {
 
   /// Update Sources
   bool addStream(LiveStream stream) {
-    var sources = streams;
-    for (var src in sources) {
+    List<LiveStream> sources = streams;
+    for (LiveStream src in sources) {
       if (src.url == stream.url) {
         // same source,
         // update info?
@@ -84,12 +84,12 @@ class LiveChannel extends Dictionary {
   }
 
   bool addStreams(Iterable<LiveStream> newStreams) {
-    var sources = streams;
+    List<LiveStream> sources = streams;
     int count = 0;
     bool found;
-    for (var item in newStreams) {
+    for (LiveStream item in newStreams) {
       found = false;
-      for (var src in sources) {
+      for (LiveStream src in sources) {
         if (src.url == item.url) {
           // same source,
           // update info?
@@ -144,7 +144,7 @@ class LiveChannel extends Dictionary {
 
   static List<Map> revert(Iterable<LiveChannel> channels) {
     List<Map> array = [];
-    for (var item in channels) {
+    for (LiveChannel item in channels) {
       array.add(item.toMap());
     }
     return array;
