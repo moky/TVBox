@@ -30,6 +30,7 @@
 
 import asyncio
 from typing import Optional, Union, Set, List, Dict
+from typing import Iterable
 
 from .types import URI
 from .utils import Logging, DateTime
@@ -88,12 +89,12 @@ class PreScanner(Logging):
                     all_streams.add(src)
         count = len(all_streams)
         index = 0
-        sources: Set[LiveStream] = set()
+        sources: List[LiveStream] = []
         self.info(msg='pre-scanning %d stream(s) in %d genre(s) ...' % (count, len(genres)))
         for src in all_streams:
             index += 1
             self.info(msg='pre-scanning stream (%d/%d) %s' % (index, count, src.url))
-            sources.add(src)
+            sources.append(src)
             if len(sources) >= self.BATCH:
                 await self.scan_streams(context=context, streams=sources)
                 sources.clear()
@@ -101,7 +102,7 @@ class PreScanner(Logging):
             await self.scan_streams(context=context, streams=sources)
 
     # protected
-    async def scan_streams(self, context: ScanContext, streams: Set[LiveStream]):
+    async def scan_streams(self, context: ScanContext, streams: Iterable[LiveStream]):
         timeout = context.timeout
         now = DateTime.current_timestamp()
         tasks = [src.check(now=now, timeout=timeout) for src in streams]

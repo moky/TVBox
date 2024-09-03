@@ -30,6 +30,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict
+from typing import Iterable
 
 from .types import MapInfo
 
@@ -135,11 +136,10 @@ class LiveScanner:
         await handler.on_scan_finished(context=context, genres=genres)
         return groups
 
-    async def _scan_genres(self, genres: List[LiveGenre],
+    async def _scan_genres(self, genres: Iterable[LiveGenre],
                            context: ScanContext, handler: ScanEventHandler) -> List[LiveGenre]:
         """ Get non-empty genres """
         groups: List[LiveGenre] = []
-        context.set(key='genre_count', value=len(genres))
         # positions
         offset = context.get(key='genre_offset', default=0)
         index = 0
@@ -161,11 +161,10 @@ class LiveScanner:
             context.set(key='genre_offset', value=offset)
         return groups
 
-    async def _scan_channels(self, channels: List[LiveChannel], genre: LiveGenre,
+    async def _scan_channels(self, channels: Iterable[LiveChannel], genre: LiveGenre,
                              context: ScanContext, handler: ScanEventHandler) -> List[LiveChannel]:
         """ Get available channels in this genre """
         available_channels: List[LiveChannel] = []
-        context.set(key='channel_count', value=len(channels))
         # positions
         offset = context.get(key='channel_offset', default=0)
         index = 0
@@ -187,11 +186,10 @@ class LiveScanner:
             context.set(key='channel_offset', value=offset)
         return available_channels
 
-    async def _scan_streams(self, streams: List[LiveStream], channel: LiveChannel,
+    async def _scan_streams(self, streams: Iterable[LiveStream], channel: LiveChannel,
                             context: ScanContext, handler: ScanEventHandler) -> List[LiveStream]:
         """ Get available streams in this channel """
         available_streams: List[LiveStream] = []
-        context.set(key='stream_count', value=len(streams))
         # positions
         offset = context.get(key='stream_offset', default=0)
         index = 0

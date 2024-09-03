@@ -12,7 +12,7 @@ import io
 
 from setuptools import setup, find_packages
 
-__version__ = '0.3.3'
+__version__ = '1.0.0'
 __author__ = 'Albert Moky'
 __contact__ = 'albert.moky@gmail.com'
 
@@ -22,7 +22,7 @@ with io.open('README.md', 'r', encoding='utf-8') as fh:
 setup(
     name='tvbox',
     version=__version__,
-    url='https://github.com/dimpart/chatbot-py',
+    url='https://github.com/moky/TVBox',
     license='MIT',
     author=__author__,
     author_email=__contact__,
@@ -51,6 +51,6 @@ setup(
         # 'multidict',   # 6.0.5
         # 'yarl',        # 1.9.4
 
-        'aiou>=0.1.0',
+        'aiou>=0.3.0',
     ]
 )

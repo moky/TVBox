@@ -28,16 +28,18 @@
 # SOFTWARE.
 # ==============================================================================
 
-from typing import Optional, Set, Tuple, List
+from typing import Optional, Tuple, List
 
 from ..types import URI
+from ..utils import Logging
+
 from .stream import LiveStream
 from .factory import LiveFactory
 from .channel import LiveChannel
 from .genre import LiveGenre
 
 
-class LiveParser:
+class LiveParser(Logging):
 
     def __init__(self):
         super().__init__()
@@ -81,11 +83,20 @@ class LiveParser:
                 # split streams
                 sources = text.split(r'#')
             # 3. create streams
-            streams: Set[LiveStream] = set()
+            streams: List[LiveStream] = []
             for src in sources:
                 m3u8 = self._fetch_stream(text=src)
-                if m3u8 is not None:
-                    streams.add(m3u8)
+                if m3u8 is None:
+                    continue
+                # check duplicated
+                found = False
+                for prev in streams:
+                    if prev.url == m3u8.url:
+                        found = True
+                        self.warning(msg='stream duplicated: %s' % src)
+                        break
+                if not found:
+                    streams.append(m3u8)
             channel.add_streams(streams=streams)
             current.add_channel(channel=channel)
         # add last group

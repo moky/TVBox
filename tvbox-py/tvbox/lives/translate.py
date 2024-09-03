@@ -29,9 +29,10 @@
 # ==============================================================================
 
 from abc import ABC, abstractmethod
-from typing import Optional, Set, List, Dict
+from typing import Optional, List, Dict
 
 from ..types import URI
+from ..utils import Logging
 
 
 class LiveTranslator(ABC):
@@ -62,7 +63,7 @@ class M3UInfo:
         return self.__url
 
 
-class M3UTranslator(LiveTranslator):
+class M3UTranslator(LiveTranslator, Logging):
 
     # noinspection PyMethodMayBeStatic
     def check(self, text: str) -> bool:
@@ -76,7 +77,7 @@ class M3UTranslator(LiveTranslator):
     def _parse_info(self, lines: str) -> Optional[M3UInfo]:
         return parse_inf(lines=lines)
 
-    def _parse_items(self, array: List[str]) -> Dict[str, Dict[str, Set[URI]]]:
+    def _parse_items(self, array: List[str]) -> Dict[str, Dict[str, List[URI]]]:
         genres = {}
         for item in array:
             info = self._parse_info(item)
@@ -88,22 +89,25 @@ class M3UTranslator(LiveTranslator):
                 channels = {}
                 genres[info.group] = channels
             # get streams with channel name
-            streams: Set = channels.get(info.name)
+            streams: List[URI] = channels.get(info.name)
             if streams is None:
-                streams = set()
+                streams = []
                 channels[info.name] = streams
+            elif info.url in streams:
+                self.warning(msg='stream duplicated: %s' % item)
+                continue
             # add stream url
-            streams.add(info.url)
+            streams.append(info.url)
         return genres
 
     # noinspection PyMethodMayBeStatic
-    def _build_channel_line(self, name: str, streams: Set[URI]) -> str:
+    def _build_channel_line(self, name: str, streams: List[URI]) -> str:
         text = '#'.join(streams)
         if len(text) < 2:
             return ''
         return '%s,%s' % (name, text)
 
-    def _build_genre_block(self, title: str, channels: Dict[str, Set[URI]]) -> str:
+    def _build_genre_block(self, title: str, channels: Dict[str, List[URI]]) -> str:
         text = '\n'
         for name in channels:
             streams = channels[name]

@@ -39,7 +39,7 @@ from .config import LiveConfig
 from .source import SourceLoader
 
 
-class LiveSet:
+class LiveSet(Logging):
 
     def __init__(self):
         super().__init__()
@@ -56,13 +56,16 @@ class LiveSet:
 
     def add_item(self, item: Dict):
         url = item.get('url')
-        assert url is not None, 'lives item error: %s' % item
+        if url is None:
+            self.warning(msg='lives item error: %s' % item)
+            return False
         for live in self.__lives:
             old = live.get('url')
             if old == url:
-                # duplicated
+                self.warning(msg='lives item duplicated: %s' % item)
                 return False
         self.__lives.append(item)
+        return True
 
     #
     #   Factory

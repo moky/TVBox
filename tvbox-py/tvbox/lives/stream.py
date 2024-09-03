@@ -33,7 +33,7 @@ from typing import Optional, Any, List, Dict
 from typing import Iterable
 
 from ..types import URI, MapInfo
-from ..utils import DateTime
+from ..utils import DateTime, Log
 
 
 class LiveStream(MapInfo):
@@ -176,10 +176,19 @@ class LiveStream(MapInfo):
     @classmethod
     def convert(cls, array: Iterable[Dict]):  # -> List[LiveStream]:
         streams: List[LiveStream] = []
-        for item in array:
-            info = cls.parse(info=item)
-            if info is not None:
-                streams.append(info)
+        for src in array:
+            m3u8 = cls.parse(info=src)
+            if m3u8 is None:
+                continue
+            # check duplicated
+            found = False
+            for prev in streams:
+                if prev.url == m3u8.url:
+                    found = True
+                    Log.warning(msg='stream duplicated: %s' % src)
+                    break
+            if not found:
+                streams.append(m3u8)
         return streams
 
     @classmethod
